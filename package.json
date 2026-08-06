@@ -3,7 +3,7 @@
   "displayName": "MPE2PDF — Markdown 导出 PDF",
   "description": "以博客 MPE 风格（myBlog 渲染样式）将 Markdown 导出为 PDF",
   "version": "0.1.0",
-  "publisher": "mpe2pdf",
+  "publisher": "Zwing",
   "private": true,
   "license": "MIT",
   "repository": {
