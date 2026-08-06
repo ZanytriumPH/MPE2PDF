@@ -6,6 +6,10 @@
   "publisher": "mpe2pdf",
   "private": true,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZanytriumPH/MPE2PDF.git"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },

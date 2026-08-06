@@ -48,6 +48,18 @@ async function exportCurrent(uri?: vscode.Uri): Promise<void> {
     return;
   }
 
+  // 活动编辑器中的文件若有未保存更改，先询问保存（导出读取的是磁盘内容）
+  const editor = vscode.window.activeTextEditor;
+  if (editor && editor.document.uri.fsPath === target.fsPath && editor.document.isDirty) {
+    const save = '保存并导出';
+    const pick = await vscode.window.showWarningMessage(
+      'MPE2PDF: 文件有未保存的更改，导出将使用磁盘上的内容',
+      save
+    );
+    if (pick !== save) return;
+    await editor.document.save();
+  }
+
   const settings = readSettings();
   // cssOverride 可能是相对工作区的路径
   const cssOverride = resolveSettingPath(settings.cssOverride, vscode.workspace.workspaceFolders?.[0]?.uri.fsPath);

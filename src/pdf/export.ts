@@ -118,6 +118,9 @@ export async function exportToPdf(opts: ExportOptions): Promise<ExportResult> {
     // --- 4. 打印 PDF ---
     progress('生成 PDF…');
     const m = settings.margin;
+    if (settings.outputDir) {
+      fs.mkdirSync(settings.outputDir, { recursive: true }); // 输出目录不存在时自动创建
+    }
     const outputPath = resolveOutputPath(mdPath, settings.outputDir);
     const footer = settings.includePageNumbers
       ? '<div style="width:100%;text-align:center;font-size:9px;color:#8c959f;'
