@@ -2,6 +2,8 @@
 .vscode/**
 src/**
 test/**
+scripts/**
+out/**
 **/*.map
 **/*.ts
 tsconfig.json

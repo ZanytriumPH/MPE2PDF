@@ -1,7 +1,7 @@
 # MPE2PDF — Markdown 导出 PDF
 
 将当前 Markdown 文件导出为 PDF，渲染样式复用 [Zwing's blog](https://github.com/ZanytriumPH/ZanytriumPH.github.io)
-（markdown-it + Redefine/MPE 风格），与博客文章页视觉一致。
+（markdown-it + MPE 风格），与博客文章页视觉一致。
 
 > 本项目最初受 MPE（Markdown Preview Enhanced）启发，故命名 MPE2PDF。
 
