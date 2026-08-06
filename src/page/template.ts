@@ -118,7 +118,12 @@ export function renderPage(opts: PageOptions): string {
         }
       }
     }
-    if (window.MathJax) await MathJax.startup.promise;
+    if (window.MathJax) {
+      await MathJax.startup.promise;
+      // 显式 typeset：配置已禁用自动 typeset（startup.typeset: false），
+      // 避免与自动渲染并发触发 MathJax 3 的竞态（手动/自动并发会跳过渲染）
+      await MathJax.typesetPromise();
+    }
   } catch (e) {
     errors.push(e.message);
   }
@@ -145,7 +150,7 @@ export function renderPage(opts: PageOptions): string {
   </article>
   ${tocNav}
 </div>
-<script>window.MathJax = { tex: { inlineMath: [['\\\\(', '\\\\)']], displayMath: [['\\\\[', '\\\\]']] } };</script>
+<script>window.MathJax = { tex: { inlineMath: [['\\\\(', '\\\\)']], displayMath: [['\\\\[', '\\\\]']] }, startup: { typeset: false } };</script>
 <script src="${assetsPrefix}vendor/mathjax/tex-svg.js"></script>
 <script src="${assetsPrefix}vendor/mermaid/mermaid.min.js"></script>
 ${readyScript}

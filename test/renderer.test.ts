@@ -102,6 +102,30 @@ describe('MathJax 公式', () => {
     const html = render('a $\nb');
     assert.ok(!html.includes('\\('));
   });
+
+  it('段落后 $$...$$（无空行）渲染为块级，不残留美元符（回归 #1）', () => {
+    const html = render('段落文字\n$$E = mc^2$$');
+    assert.ok(html.includes('<div class="math-block">\\[E = mc^2\\]</div>'), html);
+    assert.ok(!html.includes('$\\('), '不残留行内公式+美元符');
+  });
+
+  it('段内嵌 $$...$$ 渲染为块级（回归 #1）', () => {
+    const html = render('这是 $$E = mc^2$$ 公式');
+    assert.ok(html.includes('<div class="math-block">\\[E = mc^2\\]</div>'), html);
+    assert.ok(!html.includes('$\\('));
+  });
+
+  it('$$ 后跟空格/文本（货币）不误判为公式', () => {
+    const html = render('价格 $$5 元');
+    assert.ok(html.includes('$$5 元'));
+    assert.ok(!html.includes('math-block'));
+  });
+
+  it('跨行 $$...$$ 在段落后仍为块级', () => {
+    const html = render('段落文字\n$$\nE = mc^2\n$$');
+    assert.ok(html.includes('<div class="math-block">\\[\nE = mc^2\n\\]</div>'), html);
+    assert.ok(!html.includes('$\\('));
+  });
 });
 
 describe('==荧光笔高亮==', () => {

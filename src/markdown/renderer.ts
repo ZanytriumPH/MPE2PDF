@@ -192,6 +192,35 @@ export function createMd(env: RenderEnv = {}): MarkdownIt {
     // `$ ` 开头视为普通货币/文本，不做公式
     if (src[start + 1] === ' ' || src[start + 1] === '\n') return false;
 
+    // === $$ 块级公式（段落中被 paragraph 吞并的情形） ===
+    // 行首的 $$ 已由 block 规则处理；此处覆盖「段落文字\n$$E = mc^2$$」、
+    // 「这是 $$E = mc^2$$ 公式」等——否则 $$ 会被拆成 $ + 行内公式 + $ 残留。
+    // 输出块级 div（html_inline 原样注入），浏览器解析时自动纠正为独立块。
+    if (src[start + 1] === '$') {
+      if (src[start + 2] === ' ' || src[start + 2] === '$') {
+        return false; // $$ 后跟空格/$：非公式（货币、$$$ 等）；换行是跨行块级公式，允许
+      }
+      let j = start + 2;
+      let closed = -1;
+      while (j < src.length) {
+        const c = src[j];
+        if (c === '\\') { j += 2; continue; } // 跳过转义序列
+        if (c === '$' && src[j + 1] === '$') { closed = j; break; }
+        j++;
+      }
+      if (closed === -1) return false;
+      const content = src.slice(start + 2, closed);
+      if (!content.trim()) return false;
+      if (silent) return true;
+
+      state.pos = start + 2;
+      const token = state.push('html_inline', '', 0);
+      token.content = `<div class="math-block">\\[${content}\\]</div>`;
+      state.pos = closed + 2;
+      return true;
+    }
+
+    // === $ 行内公式 ===
     let j = start + 1;
     let closed = -1;
     while (j < src.length) {
