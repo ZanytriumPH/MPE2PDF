@@ -85,14 +85,24 @@ npm run compare:blog # 渲染保真对比（与博客 dist 逐块比对，需配
 npm run package      # 打包 .vsix
 ```
 
-## 路线图
+## 开发状态
+
+五个阶段全部完成，当前版本 `0.1.0` 已打包并本地安装验证：
 
 - [x] Phase 0：扩展骨架、命令与设置项声明
 - [x] Phase 1：渲染核心（callout/高亮/代码高亮/MathJax/Mermaid/PlantUML）
 - [x] Phase 2：博客同款页面模板与打印样式
 - [x] Phase 3：PDF 导出（puppeteer-core + 系统 Edge）
 - [x] Phase 4：设置项打磨与文档
-- [ ] Phase 5：打包发布（本仓库发布前需完善 publisher 与图标）
+- [x] Phase 5：图标、打包、边界回归、本地安装验证（`mpe2pdf-0.1.0.vsix`，6.26 MB）
+
+## 发布到 Marketplace（可选）
+
+本地安装已可用。若需发布到 [VS Code Marketplace](https://marketplace.visualstudio.com)：
+
+1. 在 [Azure DevOps](https://aka.ms/vscode-create-publisher) 注册 publisher 并创建 PAT
+2. `npx vsce login <publisher>`
+3. 将 `package.json` 的 `publisher` 改为注册名后执行 `npx vsce publish`
 
 ## 许可证
 
