@@ -1,0 +1,379 @@
+/* ============================================================
+   print.css — PDF 打印样式
+   提取自 myBlog assets/css/style.css 的正文排版部分
+   （Redefine/MPE 风格，明暗双主题），仅保留文章页相关样式：
+   变量 / 基础 / .markdown-body / callout / 代码 / 公式 /
+   mermaid / plantuml / TOC，另追加 @page 与分页规则。
+   ============================================================ */
+
+:root {
+  --accent: #4f7cff;
+  --accent-2: #7b5cff;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", Consolas, "Courier New", monospace;
+  --content-width: 860px;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-soft: #f6f8fa;
+  --card: #ffffff;
+  --card-hover: #fafbfc;
+  --text: #1f2328;
+  --text-secondary: #59636e;
+  --text-muted: #8c959f;
+  --border: #e4e7ec;
+  --border-strong: #d0d7de;
+  --code-bg: #f6f8fa;
+  --mark-bg: #fff2a8;
+  --mark-text: inherit;
+  --callout-bg: #f6f8fa;
+  --callout-border: #d0d7de;
+  --link-hover: #3157d6;
+  --toc-active: #4f7cff;
+  /* 表格隔行变色：半透明叠层（见 .markdown-body tbody），叠在页面或提示框底色上自动协调 */
+  --table-stripe: rgba(31, 35, 40, 0.035);
+}
+
+html[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-soft: #161b22;
+  --card: #0d1117;
+  --card-hover: #161b22;
+  --text: #e6edf3;
+  --text-secondary: #a1aab4;
+  --text-muted: #6e7681;
+  --border: #30363d;
+  --border-strong: #3d444d;
+  --code-bg: #161b22;
+  --mark-bg: #6b5d00;
+  --mark-text: #ffe97d;
+  --callout-bg: #161b22;
+  --callout-border: #30363d;
+  --link-hover: #8bb3ff;
+  --toc-active: #7ba6ff;
+  /* 暗色下对微弱亮度变化不敏感，叠层略强于浅色主题 */
+  --table-stripe: rgba(230, 237, 243, 0.05);
+}
+
+/* ---------- 基础 ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 页面四周留白 + 内容居中限宽（屏幕预览效果）；
+   打印（PDF）时由导出参数控制页边距，见 @media print */
+body { padding: 48px 56px; }
+.post-wrap { max-width: 860px; margin: 0 auto; }
+
+a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
+a:hover { color: var(--link-hover); }
+
+code, pre, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* ---------- 文章页 ---------- */
+.post-header { padding: 0 0 24px; border-bottom: 1px solid var(--border); }
+
+.post-title { font-size: clamp(1.8rem, 4.5vw, 2.6rem); font-weight: 800; line-height: 1.35; }
+
+.post-meta {
+  margin-top: 14px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.tag-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+}
+
+/* ---------- 正文排版 ---------- */
+.markdown-body { padding-top: 28px; font-size: 1.02rem; }
+
+.markdown-body > * + * { margin-top: 1.1em; }
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3,
+.markdown-body h4, .markdown-body h5, .markdown-body h6 {
+  font-weight: 700;
+  line-height: 1.4;
+}
+.markdown-body h1 { font-size: 1.9rem; }
+.markdown-body h2 { font-size: 1.75rem; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.markdown-body h3 { font-size: 1.6rem; }
+.markdown-body h4 { font-size: 1.45rem; }
+.markdown-body h5 { font-size: 1.3rem; }
+.markdown-body h6 { font-size: 1.15rem; }
+
+.markdown-body a { border-bottom: 1px dashed var(--border-strong); }
+.markdown-body a:hover { border-bottom-color: var(--accent); }
+
+.markdown-body strong { font-weight: 700; }
+.markdown-body em { font-style: italic; }
+
+.markdown-body ul, .markdown-body ol { padding-left: 1.6em; }
+.markdown-body li { margin: 0.35em 0; }
+.markdown-body li::marker { color: var(--text-muted); }
+
+.markdown-body blockquote {
+  padding: 10px 20px;
+  border-left: 4px solid var(--border-strong);
+  color: var(--text-secondary);
+  background: var(--bg-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.markdown-body th, .markdown-body td {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.markdown-body th { background: var(--bg-soft); font-weight: 600; }
+/* 隔行微弱变色：半透明叠层随底色自动协调——页面白/黑底上呈极淡条纹，
+   提示框（callout）内则叠加在其自身底色上，不显突兀 */
+.markdown-body tbody tr:nth-child(even) > td {
+  background: var(--table-stripe);
+}
+
+.markdown-body hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+
+/* ===== 荧光笔高亮（==文本==） ===== */
+.markdown-body mark {
+  background: var(--mark-bg);
+  color: var(--mark-text);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* ===== MPE 提示框 callout ===== */
+.callout {
+  position: relative;
+  padding: 16px 20px 16px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--callout-soft-border, var(--callout-border));
+  background: var(--callout-soft, var(--callout-bg));
+}
+.callout + .callout { margin-top: 1.1em; }
+
+.callout-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--callout-color, var(--text));
+}
+.callout-title svg {
+  width: 1em; height: 1em;
+  flex-shrink: 0;
+}
+
+.callout p { margin: 0.35em 0; }
+.callout > *:first-child { margin-top: 0; }
+.callout > *:last-child { margin-bottom: 0; }
+
+/* 各类型配色（浅色主题：淡彩底 + 同色系描边） */
+.callout-note     { --callout-color: #4f7cff; --callout-soft: #eaf0ff; --callout-soft-border: #cfddff; }
+.callout-info    { --callout-color: #0ea5e9; --callout-soft: #e1f3fc; --callout-soft-border: #bfe4f7; }
+.callout-tip     { --callout-color: #22c55e; --callout-soft: #e3f7ea; --callout-soft-border: #c3edd1; }
+.callout-success { --callout-color: #16a34a; --callout-soft: #dff4e6; --callout-soft-border: #b9e6c9; }
+.callout-question{ --callout-color: #a855f7; --callout-soft: #f3eafd; --callout-soft-border: #e0cdfa; }
+.callout-warning { --callout-color: #f59e0b; --callout-soft: #fef4dd; --callout-soft-border: #fbe4b0; }
+.callout-example { --callout-color: #06b6d4; --callout-soft: #def5f9; --callout-soft-border: #b6e9f2; }
+.callout-quote   { --callout-color: #64748b; --callout-soft: #eef1f5; --callout-soft-border: #d6dde6; }
+.callout-important { --callout-color: #ef4444; --callout-soft: #fdeaea; --callout-soft-border: #f9cdcd; }
+
+/* 暗色主题：低饱和暗调同色系底 */
+html[data-theme="dark"] .callout-note     { --callout-soft: #1a2240; --callout-soft-border: #2c3a6b; }
+html[data-theme="dark"] .callout-info    { --callout-soft: #0f2433; --callout-soft-border: #1e3f57; }
+html[data-theme="dark"] .callout-tip     { --callout-soft: #10281c; --callout-soft-border: #1e4a33; }
+html[data-theme="dark"] .callout-success { --callout-soft: #0c2b1c; --callout-soft-border: #1d5230; }
+html[data-theme="dark"] .callout-question{ --callout-soft: #241838; --callout-soft-border: #3d2760; }
+html[data-theme="dark"] .callout-warning { --callout-soft: #2d2110; --callout-soft-border: #4d3a1b; }
+html[data-theme="dark"] .callout-example { --callout-soft: #0e2830; --callout-soft-border: #1c4652; }
+html[data-theme="dark"] .callout-quote   { --callout-soft: #1c2128; --callout-soft-border: #313a45; }
+html[data-theme="dark"] .callout-important { --callout-soft: #331818; --callout-soft-border: #572a2a; }
+
+/* ---------- 代码块 ---------- */
+.markdown-body pre {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+.markdown-body pre code {
+  background: transparent;
+  font-size: 0.88rem;
+}
+.markdown-body code:not(pre code) {
+  background: var(--code-bg);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  border: 1px solid var(--border);
+}
+
+/* ---------- MathJax 公式 ---------- */
+.math-block {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 6px 0;
+}
+.math-block mjx-container {
+  display: block;
+  margin: 0.4em 0;
+}
+.markdown-body mjx-container { overflow-x: auto; }
+
+/* ---------- Mermaid 图 ---------- */
+pre.mermaid {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-size: 0.85rem;
+}
+.mermaid-svg {
+  margin: 1.5em 0;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  overflow-x: auto;
+}
+/* mermaid 输出的 svg 是替换元素，text-align 管不住它，转成块级 + 左右 auto 居中 */
+.mermaid-svg svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.mermaid-error {
+  padding: 14px 18px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  background: var(--bg-soft);
+}
+
+/* ---------- PlantUML ---------- */
+.plantuml-figure { text-align: center; margin: 1.5em 0; }
+.plantuml-figure img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  padding: 12px;
+}
+.plantuml-fallback-hint {
+  font-size: 0.85rem; color: var(--text-muted);
+  padding: 8px 14px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+
+/* ---------- 目录 TOC ----------
+   博客网页里是贴文章右侧的 sticky 抽屉，PDF 中改排为文章标题下的
+   顶部目录块：.post-wrap 变纵向 flex，.toc 通过 order 提到正文前 */
+.post-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.post-wrap .post { order: 2; }
+
+.toc {
+  order: 1;
+  display: block;
+  position: static;
+  max-height: none;
+  overflow: visible;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  font-size: 0.85rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.toc-title { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); line-height: 1.2; margin-bottom: 0; }
+.toc .page-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.toc ul { list-style: none; padding: 0 2px 12px 10px; }
+.toc li {
+  line-height: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+.toc li a {
+  display: block;
+  color: var(--text-secondary);
+  border-left: 2px solid transparent;
+  padding-left: 8px;
+}
+.toc li a:hover { color: var(--accent); }
+.toc li a.active {
+  color: var(--toc-active);
+  font-weight: 700;
+  border-left-color: var(--toc-active);
+}
+/* 子级：点线左边界缩进（对应 Redefine 的 ol ol 嵌套线） */
+.toc .toc-l2 { padding-left: 14px; border-left: 2px dotted var(--border-strong); }
+.toc .toc-l3 { padding-left: 26px; border-left: 2px dotted var(--border-strong); }
+
+/* ---------- 打印规则 ----------
+   页面尺寸与页边距由导出参数（puppeteer page.pdf format/margin）控制，
+   这里只负责分页行为。 */
+@page { size: A4; }
+
+@media print {
+  /* 打印时去掉屏幕留白与限宽：PDF 页边距由导出参数（puppeteer margin）控制 */
+  body { padding: 0; }
+  .post-wrap { max-width: none; margin: 0; }
+  /* 块级元素不跨页截断 */
+  pre, table, blockquote, .callout, .math-block,
+  .mermaid-svg, .plantuml-figure, img {
+    break-inside: avoid;
+  }
+  /* 标题不孤立在页底 */
+  .markdown-body h1, .markdown-body h2, .markdown-body h3,
+  .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+    break-after: avoid;
+  }
+}

@@ -101,8 +101,8 @@
         },
         "mpe2pdf.includeToc": {
           "type": "boolean",
-          "default": true,
-          "description": "是否在 PDF 中生成目录（h2/h3 标题，样式同博客右侧目录）"
+          "default": false,
+          "description": "是否在 PDF 中生成目录（h2/h3 标题，默认关闭）"
         },
         "mpe2pdf.includePageNumbers": {
           "type": "boolean",
