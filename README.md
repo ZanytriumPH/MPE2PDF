@@ -8,8 +8,8 @@
 - [x] Phase 0：扩展骨架、命令与设置项声明
 - [x] Phase 1：渲染核心（callout 提示框、`==高亮==`、代码高亮、MathJax、Mermaid、PlantUML）
 - [x] Phase 2：博客同款页面模板与打印样式（`resources/print.css` + 等待脚本）
-- [ ] Phase 3：PDF 导出（puppeteer-core + 系统 Edge）
-- [ ] Phase 4：右键菜单、设置项打磨与文档
+- [x] Phase 3：PDF 导出（puppeteer-core + 系统 Edge，端到端跑通）
+- [ ] Phase 4：设置项打磨与文档
 - [ ] Phase 5：打包发布
 
 ## 使用

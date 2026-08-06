@@ -133,6 +133,11 @@
           "type": "string",
           "default": "",
           "description": "PDF 输出目录（空 = 与源 .md 同目录）"
+        },
+        "mpe2pdf.rootDir": {
+          "type": "string",
+          "default": "",
+          "description": "根路径图片（/assets/... 等）映射目录（空 = 源 .md 所在目录）"
         }
       }
     }
