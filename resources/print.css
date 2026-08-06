@@ -209,7 +209,9 @@ code, pre, kbd {
 .callout-warning { --callout-color: #f59e0b; --callout-soft: #fef4dd; --callout-soft-border: #fbe4b0; }
 .callout-example { --callout-color: #06b6d4; --callout-soft: #def5f9; --callout-soft-border: #b6e9f2; }
 .callout-quote   { --callout-color: #64748b; --callout-soft: #eef1f5; --callout-soft-border: #d6dde6; }
-.callout-important { --callout-color: #ef4444; --callout-soft: #fdeaea; --callout-soft-border: #f9cdcd; }
+.callout-important,
+.callout-bug,
+.callout-fail { --callout-color: #ef4444; --callout-soft: #fdeaea; --callout-soft-border: #f9cdcd; }
 
 /* 暗色主题：低饱和暗调同色系底 */
 html[data-theme="dark"] .callout-note     { --callout-soft: #1a2240; --callout-soft-border: #2c3a6b; }
@@ -220,7 +222,9 @@ html[data-theme="dark"] .callout-question{ --callout-soft: #241838; --callout-so
 html[data-theme="dark"] .callout-warning { --callout-soft: #2d2110; --callout-soft-border: #4d3a1b; }
 html[data-theme="dark"] .callout-example { --callout-soft: #0e2830; --callout-soft-border: #1c4652; }
 html[data-theme="dark"] .callout-quote   { --callout-soft: #1c2128; --callout-soft-border: #313a45; }
-html[data-theme="dark"] .callout-important { --callout-soft: #331818; --callout-soft-border: #572a2a; }
+html[data-theme="dark"] .callout-important,
+html[data-theme="dark"] .callout-bug,
+html[data-theme="dark"] .callout-fail { --callout-soft: #331818; --callout-soft-border: #572a2a; }
 
 /* ---------- 代码块 ---------- */
 .markdown-body pre {
