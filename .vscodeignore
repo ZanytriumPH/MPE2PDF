@@ -1,0 +1,10 @@
+.claude/**
+.vscode/**
+src/**
+test/**
+**/*.map
+**/*.ts
+tsconfig.json
+DEVELOPMENT_PLAN.md
+.gitignore
+*.vsix

@@ -1,0 +1,163 @@
+{
+  "name": "mpe2pdf",
+  "displayName": "MPE2PDF — Markdown 导出 PDF",
+  "description": "以博客 MPE 风格（myBlog 渲染样式）将 Markdown 导出为 PDF",
+  "version": "0.1.0",
+  "publisher": "mpe2pdf",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "pdf",
+    "export",
+    "mpe"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:mpe2pdf.exportCurrent"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "mpe2pdf.exportCurrent",
+        "title": "MPE2PDF: 导出为 PDF",
+        "category": "MPE2PDF"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "mpe2pdf.exportCurrent",
+          "when": "resourceLangId == markdown",
+          "group": "1_modification"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "mpe2pdf.exportCurrent",
+          "when": "resourceExtname == .md",
+          "group": "z_commands"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "MPE2PDF",
+      "properties": {
+        "mpe2pdf.theme": {
+          "type": "string",
+          "enum": [
+            "light",
+            "dark"
+          ],
+          "default": "light",
+          "description": "PDF 明暗主题（博客样式 light/dark）"
+        },
+        "mpe2pdf.pageSize": {
+          "type": "string",
+          "enum": [
+            "A4",
+            "Letter"
+          ],
+          "default": "A4",
+          "description": "纸张大小"
+        },
+        "mpe2pdf.margin": {
+          "type": "object",
+          "default": {
+            "top": 20,
+            "bottom": 20,
+            "left": 20,
+            "right": 20
+          },
+          "properties": {
+            "top": {
+              "type": "number",
+              "minimum": 0,
+              "description": "上边距 (mm)"
+            },
+            "bottom": {
+              "type": "number",
+              "minimum": 0,
+              "description": "下边距 (mm)"
+            },
+            "left": {
+              "type": "number",
+              "minimum": 0,
+              "description": "左边距 (mm)"
+            },
+            "right": {
+              "type": "number",
+              "minimum": 0,
+              "description": "右边距 (mm)"
+            }
+          },
+          "description": "PDF 页边距 (mm)"
+        },
+        "mpe2pdf.includeToc": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否在 PDF 中生成目录（h2/h3 标题，样式同博客右侧目录）"
+        },
+        "mpe2pdf.includePageNumbers": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否在页脚显示页码"
+        },
+        "mpe2pdf.cssOverride": {
+          "type": "string",
+          "default": "",
+          "description": "追加的 CSS 文件路径（相对工作区或绝对路径；空 = 不追加）"
+        },
+        "mpe2pdf.browserPath": {
+          "type": "string",
+          "default": "",
+          "description": "Edge/Chrome 可执行文件路径（空 = 自动探测系统浏览器）"
+        },
+        "mpe2pdf.javaPath": {
+          "type": "string",
+          "default": "java",
+          "description": "Java 命令或路径（PlantUML 渲染用）"
+        },
+        "mpe2pdf.plantumlJarPath": {
+          "type": "string",
+          "default": "",
+          "description": "plantuml.jar 绝对路径（空 = 不启用 PlantUML，```plantuml 块降级显示源码）"
+        },
+        "mpe2pdf.outputDir": {
+          "type": "string",
+          "default": "",
+          "description": "PDF 输出目录（空 = 与源 .md 同目录）"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "compile:test": "tsc -p test/tsconfig.json",
+    "test": "npm run compile && npm run compile:test && node --test \".test-build/test/*.test.js\"",
+    "compare:blog": "npm run compile && node scripts/compare-blog.js",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.10.0",
+    "markdown-it": "^14.1.0",
+    "markdown-it-mark": "^4.0.0",
+    "puppeteer-core": "^25.5.0"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.20.1",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^5.9.3"
+  }
+}
