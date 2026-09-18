@@ -5,7 +5,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  esc, dateText, parseFrontMatter, extractFirstH1, renderPage,
+  esc, dateText, parseFrontMatter, extractFirstH1, stripFirstH1, renderPage,
 } from '../src/page/template';
 
 describe('front matter 解析', () => {
@@ -44,6 +44,24 @@ describe('标题回退', () => {
   });
 });
 
+describe('首个 h1 去重（stripFirstH1）', () => {
+  it('移除首个 h1 元素及其尾部换行', () => {
+    assert.equal(stripFirstH1('<h1 id="t">标题</h1>\n<p>正文</p>'), '<p>正文</p>');
+  });
+
+  it('仅移除第一个 h1，保留后续 h1', () => {
+    assert.equal(stripFirstH1('<h1 id="a">A</h1>\n<h1 id="b">B</h1>\n'), '<h1 id="b">B</h1>\n');
+  });
+
+  it('h1 内含行内标签时整体移除', () => {
+    assert.equal(stripFirstH1('<h1 id="t"><code>x</code> 标题</h1>\n<p>y</p>'), '<p>y</p>');
+  });
+
+  it('无 h1 时原样返回', () => {
+    assert.equal(stripFirstH1('<p>正文</p>'), '<p>正文</p>');
+  });
+});
+
 describe('页面组装', () => {
   const base = {
     title: '测试 & <文章>',
@@ -51,6 +69,7 @@ describe('页面组装', () => {
     toc: '<li class="toc-l2"><a href="#a">A</a></li>',
     theme: 'light' as const,
     includeToc: false,
+    headingRule: true,
     assetsPrefix: '/__mpe2pdf__/',
   };
 
@@ -72,6 +91,11 @@ describe('页面组装', () => {
     assert.ok(!renderPage(base).includes('class="toc"'), '默认不渲染目录');
     assert.ok(renderPage({ ...base, includeToc: true }).includes('class="toc"'));
     assert.ok(!renderPage({ ...base, includeToc: true, toc: '' }).includes('class="toc"'));
+  });
+
+  it('headingRule 关闭时 body 挂 no-heading-rule，开启时不挂', () => {
+    assert.ok(!renderPage(base).includes('no-heading-rule'), '默认无 no-heading-rule');
+    assert.ok(renderPage({ ...base, headingRule: false }).includes('<body class="no-heading-rule">'));
   });
 
   it('等待脚本就绪钩子与 MathJax 配置', () => {

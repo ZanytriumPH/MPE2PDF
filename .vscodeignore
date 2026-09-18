@@ -4,6 +4,7 @@ src/**
 test/**
 scripts/**
 out/**
+.test-build/**
 **/*.map
 **/*.ts
 tsconfig.json

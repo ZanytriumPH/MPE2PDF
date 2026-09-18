@@ -11,6 +11,8 @@ export interface Mpe2PdfSettings {
   margin: { top: number; bottom: number; left: number; right: number };
   includeToc: boolean;
   includePageNumbers: boolean;
+  /** 标题下方分隔线（页面主标题与正文 h1/h2 下的横线） */
+  headingRule: boolean;
   /** 追加的 CSS 文件路径（相对工作区或绝对路径） */
   cssOverride: string;
   /** Edge/Chrome 可执行文件路径（空 = 自动探测） */
@@ -29,6 +31,7 @@ const DEFAULTS: Mpe2PdfSettings = {
   margin: { top: 20, bottom: 20, left: 20, right: 20 },
   includeToc: false,
   includePageNumbers: true,
+  headingRule: true,
   cssOverride: '',
   browserPath: '',
   javaPath: 'java',
@@ -50,6 +53,7 @@ export function readSettings(): Mpe2PdfSettings {
     margin: { ...DEFAULTS.margin, ...get('margin', DEFAULTS.margin) },
     includeToc: get('includeToc', DEFAULTS.includeToc),
     includePageNumbers: get('includePageNumbers', DEFAULTS.includePageNumbers),
+    headingRule: get('headingRule', DEFAULTS.headingRule),
     cssOverride: get('cssOverride', DEFAULTS.cssOverride),
     browserPath: get('browserPath', DEFAULTS.browserPath),
     javaPath: get('javaPath', DEFAULTS.javaPath),

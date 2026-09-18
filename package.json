@@ -2,7 +2,7 @@
   "name": "mpe2pdf",
   "displayName": "MPE2PDF — Markdown 导出 PDF",
   "description": "以博客 MPE 风格（myBlog 渲染样式）将 Markdown 导出为 PDF",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "publisher": "Zwing",
   "private": true,
   "license": "MIT",
@@ -113,6 +113,11 @@
           "type": "boolean",
           "default": true,
           "description": "是否在页脚显示页码"
+        },
+        "mpe2pdf.headingRule": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否显示标题下方的分隔线（页面主标题与正文 h2 下的横线）"
         },
         "mpe2pdf.cssOverride": {
           "type": "string",

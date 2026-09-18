@@ -13,7 +13,7 @@ import type { Mpe2PdfSettings } from '../config';
 import { createMd, RenderEnv } from '../markdown/renderer';
 import { buildToc } from '../markdown/toc';
 import { PlantUMLRenderer } from '../plantuml';
-import { parseFrontMatter, extractFirstH1, renderPage } from '../page/template';
+import { parseFrontMatter, extractFirstH1, stripFirstH1, renderPage } from '../page/template';
 import { findBrowserPath, launchBrowser } from './browser';
 import { createStaticServer, StaticServerOptions } from './server';
 
@@ -74,14 +74,19 @@ export async function exportToPdf(opts: ExportOptions): Promise<ExportResult> {
     ? new PlantUMLRenderer(settings.javaPath, settings.plantumlJarPath)
     : undefined;
   const env: RenderEnv = { baseUri: server.baseUri, usedSlugs: new Set(), puml };
-  const html = createMd(env).render(fm.content, env);
-  const title = fm.title || extractFirstH1(html) || path.basename(mdPath, path.extname(mdPath));
+  const rawHtml = createMd(env).render(fm.content, env);
+  const firstH1 = extractFirstH1(rawHtml);
+  const title = fm.title || firstH1 || path.basename(mdPath, path.extname(mdPath));
+  // 正文首个 h1 与页面标题相同（无 front matter 的常规 Markdown 常见）时，
+  // 从正文中移除，避免标题在 post-header 与正文中重复出现
+  const html = firstH1 && firstH1 === title ? stripFirstH1(rawHtml) : rawHtml;
   serverOpts.pageHtml = renderPage({
     title,
     html,
     toc: buildToc(html),
     theme: settings.theme,
     includeToc: settings.includeToc,
+    headingRule: settings.headingRule,
     assetsPrefix: `${server.baseUri}__mpe2pdf__/`,
   });
 

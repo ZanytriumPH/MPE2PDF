@@ -65,6 +65,11 @@ export function extractFirstH1(html: string): string {
   return m[1].replace(/<[^>]*>/g, '').trim();
 }
 
+/** 移除渲染后 HTML 中的首个 h1 元素（该标题已被用作页面标题时避免重复出现） */
+export function stripFirstH1(html: string): string {
+  return html.replace(/<h1[^>]*>[\s\S]*?<\/h1>\n?/, '');
+}
+
 export interface PageOptions {
   title: string;
   /** 渲染后的正文 HTML */
@@ -73,14 +78,17 @@ export interface PageOptions {
   toc: string;
   theme: 'light' | 'dark';
   includeToc: boolean;
+  /** 标题下方分隔线；false 时 body 挂 no-heading-rule 由 CSS 去线 */
+  headingRule: boolean;
   /** 资源 URL 前缀（Phase 3 为 http 服务的 /__mpe2pdf__/），以 / 结尾 */
   assetsPrefix: string;
 }
 
 /** 组装完整 PDF 页面 HTML */
 export function renderPage(opts: PageOptions): string {
-  const { title, html, toc, theme, includeToc, assetsPrefix } = opts;
+  const { title, html, toc, theme, includeToc, headingRule, assetsPrefix } = opts;
   const hljs = theme === 'dark' ? 'hljs-dark.css' : 'hljs.css';
+  const bodyClass = headingRule ? '' : ' class="no-heading-rule"';
 
   const tocNav = includeToc && toc
     ? `<nav class="toc">
@@ -140,7 +148,7 @@ export function renderPage(opts: PageOptions): string {
 <link rel="stylesheet" href="${assetsPrefix}print.css">
 <link rel="stylesheet" href="${assetsPrefix}${hljs}">
 </head>
-<body>
+<body${bodyClass}>
 <div class="post-wrap">
   <article class="post">
     <header class="post-header">
