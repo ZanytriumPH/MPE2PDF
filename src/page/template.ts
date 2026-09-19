@@ -77,6 +77,10 @@ export interface PageOptions {
   /** buildToc 输出；为空则不出目录 */
   toc: string;
   theme: 'light' | 'dark';
+  /** 正文字号（px）；设置后覆盖根字号，标题等 rem 尺寸联动缩放 */
+  fontSize?: number;
+  /** 用户覆盖 CSS 的完整 URL（mpe2pdf.cssOverride 解析成功时传入） */
+  cssOverrideHref?: string;
   includeToc: boolean;
   /** 标题下方分隔线；false 时 body 挂 no-heading-rule 由 CSS 去线 */
   headingRule: boolean;
@@ -86,9 +90,17 @@ export interface PageOptions {
 
 /** 组装完整 PDF 页面 HTML */
 export function renderPage(opts: PageOptions): string {
-  const { title, html, toc, theme, includeToc, headingRule, assetsPrefix } = opts;
+  const { title, html, toc, theme, fontSize, cssOverrideHref, includeToc, headingRule, assetsPrefix } = opts;
   const hljs = theme === 'dark' ? 'hljs-dark.css' : 'hljs.css';
   const bodyClass = headingRule ? '' : ' class="no-heading-rule"';
+  // 根字号是全部 rem 尺寸（标题/正文/小字号文案）的基准，改 html 即整体等比缩放；
+  // body 的 px 基准同步覆盖，保证 em 相对单位（如代码 0.9em）一致
+  const fontCss = fontSize !== undefined && Number.isFinite(fontSize) && fontSize > 0
+    ? `<style>html { font-size: ${fontSize}px; } body { font-size: ${fontSize}px; }</style>`
+    : '';
+  const overrideLink = cssOverrideHref
+    ? `<link rel="stylesheet" href="${cssOverrideHref}">`
+    : '';
 
   const tocNav = includeToc && toc
     ? `<nav class="toc">
@@ -146,7 +158,7 @@ export function renderPage(opts: PageOptions): string {
 <meta charset="UTF-8">
 <title>${esc(title)}</title>
 <link rel="stylesheet" href="${assetsPrefix}print.css">
-<link rel="stylesheet" href="${assetsPrefix}${hljs}">
+<link rel="stylesheet" href="${assetsPrefix}${hljs}">${fontCss}${overrideLink}
 </head>
 <body${bodyClass}>
 <div class="post-wrap">

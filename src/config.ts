@@ -8,6 +8,8 @@ import * as path from 'path';
 export interface Mpe2PdfSettings {
   theme: 'light' | 'dark';
   pageSize: 'A4' | 'Letter';
+  /** 正文字号（px）；作为页面根字号，标题等 rem 尺寸联动缩放 */
+  fontSize: number;
   margin: { top: number; bottom: number; left: number; right: number };
   includeToc: boolean;
   includePageNumbers: boolean;
@@ -28,6 +30,7 @@ export interface Mpe2PdfSettings {
 const DEFAULTS: Mpe2PdfSettings = {
   theme: 'light',
   pageSize: 'A4',
+  fontSize: 16,
   margin: { top: 20, bottom: 20, left: 20, right: 20 },
   includeToc: false,
   includePageNumbers: true,
@@ -50,6 +53,7 @@ export function readSettings(): Mpe2PdfSettings {
   return {
     theme: get('theme', DEFAULTS.theme),
     pageSize: get('pageSize', DEFAULTS.pageSize),
+    fontSize: get('fontSize', DEFAULTS.fontSize),
     margin: { ...DEFAULTS.margin, ...get('margin', DEFAULTS.margin) },
     includeToc: get('includeToc', DEFAULTS.includeToc),
     includePageNumbers: get('includePageNumbers', DEFAULTS.includePageNumbers),

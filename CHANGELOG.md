@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.4 — 2026-09-19
+
+### 新增
+
+- 设置 `mpe2pdf.fontSize`（默认 16，范围 8–32）：自定义正文字号（px），标题、代码块、提示框等按比例联动缩放
+
+### 修复
+
+- `mpe2pdf.cssOverride` 此前未实际生效（覆盖样式未注入导出页面），现已修复
+
+### 调整
+
+- 编辑器右键菜单条目移至 MPE（Markdown Preview Enhanced）同一分组显示
+
+### 文档
+
+- 插件市场描述调整：样式来源统一表述为借鉴 Markdown Preview Enhanced（MPE）
+- README 精简：移除安装、开发、Marketplace 发布等与使用者无关的章节
+
 ## 0.1.3 — 2026-09-18
 
 ### 功能
@@ -26,7 +45,7 @@
 
 ### 功能
 
-- **博客同款渲染**：以 myBlog（Redefine/MPE 风格）样式渲染 Markdown，正文排版与博客文章页视觉一致
+- **MPE 风格渲染**：以 Markdown Preview Enhanced（MPE）风格渲染 Markdown
 - **13 种 MPE 风格提示框**：`[!note]` `[!info]` `[!tip]` `[!success]` `[!question]`
   `[!warning]` `[!example]` `[!quote]` `[!important]` `[!bug]` `[!fail]`
 - **公式**：`$..$` 行内 / `$$..$$` 块级（MathJax 3，修复了段落中 `$$` 被拆解的问题）
@@ -49,5 +68,5 @@
 
 ### 工程
 
-- 70 个单元测试（node:test）与博客 dist 逐块比对脚本
+- 70 个单元测试（node:test）与渲染产物逐块比对脚本
 - 打包体积优化：排除开发目录（29 MB → 6.26 MB）

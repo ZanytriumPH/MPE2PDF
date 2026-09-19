@@ -98,6 +98,24 @@ describe('页面组装', () => {
     assert.ok(renderPage({ ...base, headingRule: false }).includes('<body class="no-heading-rule">'));
   });
 
+  it('fontSize 设置时注入根字号覆盖，默认不注入', () => {
+    assert.ok(!renderPage(base).includes('<style>html'), '默认无字号覆盖');
+    const page = renderPage({ ...base, fontSize: 20 });
+    assert.ok(page.includes('<style>html { font-size: 20px; } body { font-size: 20px; }</style>'));
+  });
+
+  it('非法 fontSize（NaN/负数）不注入', () => {
+    assert.ok(!renderPage({ ...base, fontSize: Number.NaN }).includes('<style>html'));
+    assert.ok(!renderPage({ ...base, fontSize: -3 }).includes('<style>html'));
+  });
+
+  it('cssOverrideHref 提供时注入覆盖 CSS 链接，且在字号覆盖之后', () => {
+    assert.ok(!renderPage(base).includes('override.css'), '默认无覆盖链接');
+    const page = renderPage({ ...base, fontSize: 20, cssOverrideHref: '/__mpe2pdf__/override.css' });
+    assert.ok(page.includes('<link rel="stylesheet" href="/__mpe2pdf__/override.css">'));
+    assert.ok(page.indexOf('font-size: 20px') < page.indexOf('override.css'), '用户覆盖 CSS 排在后面，优先级更高');
+  });
+
   it('等待脚本就绪钩子与 MathJax 配置', () => {
     const page = renderPage(base);
     assert.ok(page.includes('window.__renderReady = true'));

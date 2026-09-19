@@ -1,8 +1,8 @@
 {
   "name": "mpe2pdf",
   "displayName": "MPE2PDF — Markdown 导出 PDF",
-  "description": "以博客 MPE 风格（myBlog 渲染样式）将 Markdown 导出为 PDF",
-  "version": "0.1.3",
+  "description": "以 Markdown Preview Enhanced（MPE）风格将 Markdown 导出为 PDF",
+  "version": "0.1.4",
   "publisher": "Zwing",
   "private": true,
   "license": "MIT",
@@ -40,7 +40,7 @@
         {
           "command": "mpe2pdf.exportCurrent",
           "when": "resourceLangId == markdown",
-          "group": "1_modification"
+          "group": "markdown-preview-enhanced"
         }
       ],
       "explorer/context": [
@@ -61,7 +61,7 @@
             "dark"
           ],
           "default": "light",
-          "description": "PDF 明暗主题（博客样式 light/dark）"
+          "description": "PDF 明暗主题（MPE 样式 light/dark）"
         },
         "mpe2pdf.pageSize": {
           "type": "string",
@@ -71,6 +71,13 @@
           ],
           "default": "A4",
           "description": "纸张大小"
+        },
+        "mpe2pdf.fontSize": {
+          "type": "number",
+          "default": 16,
+          "minimum": 8,
+          "maximum": 32,
+          "description": "正文字号（px）；标题、代码块、提示框等按比例联动缩放"
         },
         "mpe2pdf.margin": {
           "type": "object",

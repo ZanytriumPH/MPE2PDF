@@ -85,6 +85,10 @@ export async function exportToPdf(opts: ExportOptions): Promise<ExportResult> {
     html,
     toc: buildToc(html),
     theme: settings.theme,
+    fontSize: settings.fontSize,
+    cssOverrideHref: settings.cssOverride && fs.existsSync(settings.cssOverride)
+      ? `${server.baseUri}__mpe2pdf__/override.css`
+      : undefined,
     includeToc: settings.includeToc,
     headingRule: settings.headingRule,
     assetsPrefix: `${server.baseUri}__mpe2pdf__/`,
