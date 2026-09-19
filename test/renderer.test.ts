@@ -98,6 +98,26 @@ describe('MathJax 公式', () => {
     assert.ok(!html.includes('\\('));
   });
 
+  it('宽松行内公式：$ 与公式间有空格/换行仍渲染（内容首尾空白去除）', () => {
+    const html = render('近似 $ \\frac{1}{e} \\approx 0.368 $ 结束');
+    assert.ok(html.includes('\\(\\frac{1}{e} \\approx 0.368\\)'), html);
+  });
+
+  it('宽松行内公式：开头有空格、结尾紧凑（$ x$）也渲染', () => {
+    const html = render('横轴（$ P(+)cost$）');
+    assert.ok(html.includes('\\(P(+)cost\\)'), html);
+  });
+
+  it('宽松行内公式可跨行（限同一段落，内部换行保留）', () => {
+    const html = render('$ \\lim_{m \\to \\infty}\n(1 - 1/m)^m $');
+    assert.ok(html.includes('\\(\\lim_{m \\to \\infty}\n(1 - 1/m)^m\\)'), html);
+  });
+
+  it('段内/表格单元格中的宽松块级 $$ x $$ 渲染为 math-block（内容去空白）', () => {
+    const html = render('这是 $$ E = mc^2 $$ 公式');
+    assert.ok(html.includes('<div class="math-block">\\[E = mc^2\\]</div>'), html);
+  });
+
   it('行内公式不跨行', () => {
     const html = render('a $\nb');
     assert.ok(!html.includes('\\('));
@@ -123,8 +143,31 @@ describe('MathJax 公式', () => {
 
   it('跨行 $$...$$ 在段落后仍为块级', () => {
     const html = render('段落文字\n$$\nE = mc^2\n$$');
-    assert.ok(html.includes('<div class="math-block">\\[\nE = mc^2\n\\]</div>'), html);
+    assert.ok(html.includes('<div class="math-block">\\[E = mc^2\\]</div>'), html);
     assert.ok(!html.includes('$\\('));
+  });
+
+  it('<br> 标签转为硬换行（兼容 <br/> 与大小写），不转义为字面文本', () => {
+    const html = render('第一行<br>第二行<br/>第三行<BR />结束');
+    assert.ok(!html.includes('&lt;br'), '不出现字面 <br>');
+    assert.equal((html.match(/<br>/g) || []).length, 3, html);
+  });
+});
+
+describe('独占段落图片居中', () => {
+  it('独立图片段落标记 img-center', () => {
+    const html = render('![图](a.png)');
+    assert.ok(html.includes('<p class="img-center"><img src="a.png"'), html);
+  });
+
+  it('链接包裹的图片段落标记 img-center', () => {
+    const html = render('[![图](a.png)](https://example.com)');
+    assert.ok(html.includes('<p class="img-center"><a href="https://example.com"><img src="a.png"'), html);
+  });
+
+  it('行文中的行内图片不标记', () => {
+    const html = render('文字 ![图](a.png) 继续');
+    assert.ok(!html.includes('img-center'), html);
   });
 });
 

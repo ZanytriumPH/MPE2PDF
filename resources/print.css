@@ -150,6 +150,10 @@ code, pre, kbd {
   border-radius: var(--radius-sm);
 }
 
+/* 独占段落的图片居中（渲染器标记 img-center，含链接包裹情形）；
+   行文中的行内小图不受影响 */
+.markdown-body p.img-center { text-align: center; }
+
 .markdown-body table {
   width: 100%;
   border-collapse: collapse;

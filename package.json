@@ -1,8 +1,8 @@
 {
   "name": "mpe2pdf",
-  "displayName": "MPE2PDF — Markdown 导出 PDF",
-  "description": "以 Markdown Preview Enhanced（MPE）风格将 Markdown 导出为 PDF",
-  "version": "0.1.4",
+  "displayName": "MPE2PDF — Markdown to PDF",
+  "description": "Convert Markdown to PDF in Markdown Preview Enhanced (MPE) style",
+  "version": "0.1.5",
   "publisher": "Zwing",
   "private": true,
   "license": "MIT",
@@ -31,7 +31,7 @@
     "commands": [
       {
         "command": "mpe2pdf.exportCurrent",
-        "title": "MPE2PDF: 导出为 PDF",
+        "title": "MPE2PDF: Export to PDF",
         "category": "MPE2PDF"
       }
     ],

@@ -185,24 +185,52 @@ export function createMd(env: RenderEnv = {}): MarkdownIt {
     }
   });
 
+  // === 2.5 独占段落的图片：标记 img-center 类（print.css 据此居中） ===
+  // 仅当段落的有效内容恰为一个图片（可被链接包裹、可含空白文本）时标记；
+  // 行文中的行内小图、表格单元格内的图片不受影响（:only-child 数不到文本节点，
+  // 纯 CSS 无法区分"独占段落"与"行内图"，故在 token 层判断）
+  md.core.ruler.after('inline', 'img_center', (state) => {
+    const tokens = state.tokens;
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i].type !== 'paragraph_open') continue;
+      const inlineTok = tokens[i + 1];
+      if (!inlineTok || inlineTok.type !== 'inline' || !inlineTok.children) continue;
+      const children = inlineTok.children.filter(
+        (t) => !(t.type === 'text' && !t.content.trim()) && t.type !== 'softbreak'
+      );
+      const isImgPara =
+        (children.length === 1 && children[0].type === 'image') ||
+        (children.length === 3 &&
+          children[0].type === 'link_open' &&
+          children[1].type === 'image' &&
+          children[2].type === 'link_close');
+      if (isImgPara) {
+        const attrs = tokens[i].attrs || (tokens[i].attrs = []);
+        attrs.push(['class', 'img-center']);
+      }
+    }
+  });
+
   // === 3. MathJax 公式：$...$ 行内 / $$...$$ 块级 ===
   // 公式内容直接作为原文输出（不经过 Markdown 解析，避免 `_`/`*` 被误判），
   // 由运行时 MathJax 渲染成 SVG。挂在 escape 之前，`\$` 转义优先。
+  //
+  // 定界符与公式之间的空格/换行是容忍的（MPE 兼容），内容首尾空白去除：
+  //   - "$ x $" / "$$ x $$" / "$ x$" 均按公式渲染；
+  //   - 单 $ 紧凑形式（$x$）闭合不跨行（避免同行货币符号误配对）；
+  //     宽松形式（$ 后是空格/换行）允许跨行寻找闭合 $（限同一段落内）；
+  //   - 无闭合 $ 时视为普通文本（货币 "$ 100" 不受影响）。
   md.inline.ruler.before('escape', 'math_inline', (state, silent) => {
     const src = state.src;
     const start = state.pos;
     if (src[start] !== '$') return false;
-    // `$ ` 开头视为普通货币/文本，不做公式
-    if (src[start + 1] === ' ' || src[start + 1] === '\n') return false;
 
-    // === $$ 块级公式（段落中被 paragraph 吞并的情形） ===
+    // === $$ 块级公式（段落/表格单元格中被 paragraph 吞并的情形） ===
     // 行首的 $$ 已由 block 规则处理；此处覆盖「段落文字\n$$E = mc^2$$」、
-    // 「这是 $$E = mc^2$$ 公式」等——否则 $$ 会被拆成 $ + 行内公式 + $ 残留。
+    // 表格单元格「$$ ... $$」等——否则 $$ 会被拆成 $ + 行内公式 + $ 残留。
     // 输出块级 div（html_inline 原样注入），浏览器解析时自动纠正为独立块。
     if (src[start + 1] === '$') {
-      if (src[start + 2] === ' ' || src[start + 2] === '$') {
-        return false; // $$ 后跟空格/$：非公式（货币、$$$ 等）；换行是跨行块级公式，允许
-      }
+      if (src[start + 2] === '$') return false; // $$$：非公式
       let j = start + 2;
       let closed = -1;
       while (j < src.length) {
@@ -212,8 +240,8 @@ export function createMd(env: RenderEnv = {}): MarkdownIt {
         j++;
       }
       if (closed === -1) return false;
-      const content = src.slice(start + 2, closed);
-      if (!content.trim()) return false;
+      const content = src.slice(start + 2, closed).trim();
+      if (!content) return false;
       if (silent) return true;
 
       state.pos = start + 2;
@@ -224,24 +252,36 @@ export function createMd(env: RenderEnv = {}): MarkdownIt {
     }
 
     // === $ 行内公式 ===
+    const spaced = src[start + 1] === ' ' || src[start + 1] === '\n';
     let j = start + 1;
     let closed = -1;
     while (j < src.length) {
       const c = src[j];
-      if (c === '\\') { j += 2; continue; }   // 跳过转义序列
-      if (c === '\n') return false;            // 行内公式不跨行
+      if (c === '\\') { j += 2; continue; } // 跳过转义序列
       if (c === '$') { closed = j; break; }
+      if (!spaced && c === '\n') return false; // 紧凑形式不跨行
       j++;
     }
     if (closed === -1) return false;
-    const content = src.slice(start + 1, closed);
-    if (!content.trim()) return false;
+    const content = src.slice(start + 1, closed).trim();
+    if (!content) return false;
     if (silent) return true;
 
     state.pos = start + 1;
     const token = state.push('math_inline', 'span', 0);
     token.content = content;
     state.pos = closed + 1;
+    return true;
+  });
+
+  // === 3.5 <br> 标签：html:false 时 markdown-it 会转义成字面文本 ===
+  // 笔记常在表格单元格/公式之间用 <br> 换行，统一转为硬换行（不区分大小写，兼容 <br/>）
+  md.inline.ruler.before('escape', 'html_br', (state, silent) => {
+    const m = state.src.slice(state.pos, state.pos + 8).match(/^<br\s*\/?>/i);
+    if (!m) return false;
+    if (silent) return true;
+    state.pos += m[0].length;
+    state.push('hardbreak', 'br', 0);
     return true;
   });
 
